@@ -23,4 +23,4 @@ Example Input:
 
 Example Output:
 
-             
+![Couldn't be displayed ](/output.png)  
