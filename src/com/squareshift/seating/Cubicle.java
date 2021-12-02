@@ -1,3 +1,4 @@
+package com.squareshift.seating;
 
 public class Cubicle {
 	

@@ -1,3 +1,5 @@
+package com.squareshift.seating;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -6,17 +8,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-public class SeatPassengers {
-
-	public static void main(String[] args) {
-		
-		int[][] seatArray = {{13,2},{4,3},{2,3},{3,14}};
-		int noOfPassengers = 100;
-		
-		seatPassengers(seatArray, noOfPassengers);
-	}
+public class AirplaneSeating {
 	
-	private static void seatPassengers(int[][] seatArray, int noOfPassengers) {
+	public static void seatPassengers(int[][] seatArray, int noOfPassengers) {
 		int passenger=1;
 		
 		TreeMap<Integer,Cubicle> seatMap = new TreeMap<>(); 
@@ -83,7 +77,7 @@ public class SeatPassengers {
 		
 		if(passenger <= noOfPassengers) {
 			for(Map.Entry<Integer, List<String>> entry : aisleSeatMap.entrySet()) {
-				passenger = populateCubicle(passenger, seatMap, entry);
+				passenger = populateCubicle(passenger, seatMap, entry, noOfPassengers);
 				if(passenger > noOfPassengers)
 					break;
 			}
@@ -91,7 +85,7 @@ public class SeatPassengers {
 		
 		if(passenger <= noOfPassengers) {
 			for(Map.Entry<Integer, List<String>> entry : windowSeatMap.entrySet()) {
-				passenger = populateCubicle(passenger, seatMap, entry);
+				passenger = populateCubicle(passenger, seatMap, entry, noOfPassengers);
 				if(passenger > noOfPassengers)
 					break;
 			}
@@ -99,20 +93,13 @@ public class SeatPassengers {
 		
 		if(passenger <= noOfPassengers) {
 			for(Map.Entry<Integer, List<String>> entry : centerSeatMap.entrySet()) {
-				passenger = populateCubicle(passenger, seatMap, entry);
+				passenger = populateCubicle(passenger, seatMap, entry, noOfPassengers);
 				if(passenger > noOfPassengers)
 					break;
 			}
 		}
 		
-		
-		for(Map.Entry<Integer, Cubicle> entry : seatMap.entrySet()) {
-			Cubicle cubicle = entry.getValue();
-			for(int i=0;i<cubicle.getNoOfRows();i++) {
-				System.out.println(Arrays.toString(cubicle.getCubicleSeats()[i]));
-			}
-			System.out.println("------------------");
-		}
+		printSeating(seatMap, seatArray);
 		
 	}
 	
@@ -130,7 +117,7 @@ public class SeatPassengers {
 	}
 	
 	private static int populateCubicle(int passenger, TreeMap<Integer, Cubicle> seatMap,
-			Map.Entry<Integer, List<String>> entry) {
+			Map.Entry<Integer, List<String>> entry, int noOfPassengers) {
 		List<String> seatNameList = entry.getValue();
 		for(String seatName: seatNameList) {
 			String[] seatNameArray = seatName.split("_");
@@ -141,8 +128,44 @@ public class SeatPassengers {
 			cubicleSeats[row][column]=passenger++;
 			cubicle.setCubicleSeats(cubicleSeats);
 			seatMap.put(Integer.parseInt(seatNameArray[0]), cubicle);
+			if(passenger > noOfPassengers)
+				break;
 		}
 		return passenger;
+	}
+	
+	private static int getMaxRows(int[][] seatArray) {
+		int max = 0;
+		for(int i=0;i<seatArray.length;i++) {
+			max = Math.max(max, seatArray[i][1]);
+		}
+		return max;
+	}
+	
+	private static void printSeating(TreeMap<Integer,Cubicle> seatMap, int[][] seatArray) {
+		int maxRows = getMaxRows(seatArray);
+		int[] maxLengthArray = new int[seatArray.length];
+		int index=0;
+		while(index < maxRows) {
+			Iterator<Map.Entry<Integer, Cubicle>> iterator = seatMap.entrySet().iterator();
+			int loopIndex = 0;
+			while(iterator.hasNext()) {
+				Map.Entry<Integer, Cubicle> entry = (Entry<Integer, Cubicle>) iterator.next();
+				Cubicle cubicle = entry.getValue();
+				if(index < cubicle.getNoOfRows()) {
+					for(int i=0; i < cubicle.getCubicleSeats()[index].length; i++) {
+						System.out.printf("%5d", cubicle.getCubicleSeats()[index][i]);
+					}
+					maxLengthArray[loopIndex] = cubicle.getCubicleSeats()[index].length * 5;
+				} else {
+					System.out.format("%1$"+maxLengthArray[loopIndex]+"s", " ");
+				}
+				loopIndex++;
+				System.out.format("%1$5s", " ");
+			}
+			index++;
+			System.out.println();
+		}		
 	}
 
 }
