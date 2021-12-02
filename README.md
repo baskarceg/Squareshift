@@ -1,4 +1,4 @@
-# Squareshift
+# Airplane Seating Algorithm
 
 Use static function AirplaneSeating.seatPassengers(int[][] seatArray, int noOfPassengers) to seat the passengers in the below order 
 
